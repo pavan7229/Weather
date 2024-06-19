@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Weather Forecast For Next Seven Days</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+<body onload="DefaultScreen()">
+    <div class="top">
+        <center>
+        <h1 id="Para1">7 Days Weather Forecast</h1>
+        <p id="inputContainer">City: <input type="text" id="cityInput" list="citynames"></p>
+        <datalist id="citynames">
+            <option value="Achampet">Achampet</option>
+            <option value="Addanki">Addanki</option>
+<option value="Andhra Pradesh">Amaravati</option>
+<option value="Arunachal Pradesh">Itanagar</option>
+<option value="Assam">Dispur</option>
+<option value="Bihar">Patna</option>
+<option value="Chhattisgarh">Araku Raipur</option>
+<option value="Goa">Panaji</option>
+<option value="Gujarat">Gandhinagar</option>
+<option value="Haryana">Chandigarh</option>
+<option value="Himachal Pradesh">Shimla</option>
+<option value="Jharkhand">Ranchi</option>
+<option value="Karnataka">Bengaluru</option>
+<option value="Kerala">Thiruvananthapuram</option>
+<option value="Madya Pradesh">Bhopal</option>
+<option value="Maharastra">Mumbai</option>
+<option value="Manipur">Impal</option>
+<option value="Meghalaya">Shillong</option>
+<option value="Mizoram">Aizawl</option>
+<option value="Nagaland">Kohima</option>
+<option value="Odisha">Bhubaneswar</option>
+<option value="Punjab">Chandigarh</option>
+<option value="Rajasthan">Jaipur</option>
+<option value="Sikkim">Gangtok</option>
+<option value="Tamil Nadu">Chennai</option>
+<option value="Telangana">Hyderabad</option>
+<option value="Tripura">Agartala</option>
+<option value="Uttar Pradesh">Lucknow</option>
+<option value="Uttarakhand">Dehradun</option>
+<option value="West Bengal">Kolkata</option>
+        </datalist>
+        <button type="button" onclick="someFunc()">Submit</button>
+        <div class="today">
+            <div id="currentWeather"></div>
+            <div id="forecastChart"></div>
+        </div>
+        <h2 id="cityName">Delhi</h2>
+    </center>
+    </div> 
+        <div id="iconsContainer">    
+            <div class = "icons">
+                <p class="weather" id="day1"></p>
+                <div class="image">
+                    <img src="dots.png" class="imgClass" id="img1">
+                </div>
+                <p class="minValues" id="day1Min">Loading</p>
+                <p class="maxValues" id="day1Max">Loading</p>
+            </div>
+            <div class = "icons">
+                <p class="weather" id="day2"></p>
+                <div class="image">
+                    <img src="dots.png" class="imgClass" id="img2">
+                </div>
+                <p class="minValues" id="day2Min">Loading</p>
+                <p class="maxValues" id="day2Max">Loading</p>
+            </div>
+            <div class = "icons">
+                <p class="weather" id="day3"></p>
+                <div class="image">
+                    <img src="dots.png" class="imgClass" id="img3">
+                </div>
+                <p class="minValues" id="day3Min">Loading</p>
+                <p class="maxValues" id="day3Max">Loading</p>
+            </div>
+            <div class = "icons">
+                <p class="weather" id="day4"></p>
+                <div class="image">
+                    <img src="dots.png" class="imgClass" id="img4">
+                </div>
+                <p class="minValues" id="day4Min">Loading</p>
+                <p class="maxValues" id="day4Max">Loading</p>
+            </div>
+            <div class = "icons">
+                <p class="weather" id="day5"></p>
+                <div class="image">
+                    <img src="dots.png" class="imgClass" id="img5">
+                </div>
+                <p class="minValues" id="day5Min">Loading</p>
+                <p class="maxValues" id="day5Max">Loading</p>
+            </div>
+            <div class = "icons">
+                <p class="weather" id="day6"></p>
+                <div class="image">
+                    <img src="dots.png" class="imgClass" id="img6">
+                </div>
+                <p class="minValues" id="day6Min">Loading</p>
+                <p class="maxValues" id="day6Max">Loading</p>
+            </div>
+            <div class = "icons">
+                <p class="weather" id="day7"></p>
+                <div class="image">
+                    <img src="dots.png" class="imgClass" id="img7">
+                </div>
+                <p class="minValues" id="day7Min">Loading</p>
+                <p class="maxValues" id="day7Max">Loading</p>
+            </div>
+            <center>
+                <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+            </center>
+        </div>   
+        <script src="main.js"></script>
+        <script>
+            function someFunc() {
+                GetInfo();
+                fetchWeather();
+                barChart();
+            }
+            async function fetchWeather() {
+                const city = document.getElementById('cityInput').value;
+                const apiKey = 'af6b5e2f0fb1e4008717f75d7b39bb64'; 
+                const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+                try {
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+                    displayCurrentWeather(data.list[0]);
+                    displayForecastChart(data.list);
+                } catch (error) {
+                    console.error('Error fetching weather data:', error);
+                }
+            }
+
+            function displayCurrentWeather(weather) {
+                const currentWeatherDiv = document.getElementById('currentWeather');
+                currentWeatherDiv.innerHTML = `
+                   <h2>Today Weather</h2>
+                    <p>Condition: ${weather.weather[0].description}</p>
+                    <p>Temperature: ${weather.main.temp}°C</p>
+                    <p>Humidity: ${weather.main.humidity}%</p>
+                    <p>Wind Speed: ${weather.wind.speed} m/s</p>
+                    <p>Date and Time: ${weather.dt_txt}</p>
+                `;
+            }
+            function displayForecastChart(forecast) {
+                const dates = [];
+                const temperatures = [];
+                const humidities = [];
+                const conditions = [];
+
+            forecast.forEach(item => {
+                const date = new Date(item.dt_txt);
+                dates.push(date.toDateString());
+                temperatures.push(item.main.temp);
+                humidities.push(item.main.humidity);
+                conditions.push(item.weather[0].description);
+            });
+            }
+        </script>
+</body>
+</html>
